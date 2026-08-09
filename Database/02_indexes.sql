@@ -1,4 +1,4 @@
-CREATE INDEX idx_docotors_department_id
+CREATE INDEX idx_doctors_department_id
 ON Doctors (department_id);
 
 CREATE INDEX idx_Appointments_doctor_id

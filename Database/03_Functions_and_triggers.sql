@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION Double_booking()
 RETURNS TRIGGER AS $$
    BEGIN
-      IF EXISTS (SELECT 1 FROM Appointments WHERE doctor_id = NEW.doctor_id AND appointment_time = NEW.appointment_time) THEN
+      IF EXISTS (SELECT 1 FROM Appointments WHERE doctor_id = NEW.doctor_id AND appointment_time = NEW.appointment_time AND appointment_id != NEW.appointment_id) THEN
          RAISE EXCEPTION 'Doctor is already booked at this time';
       END IF;
       RETURN NEW;
@@ -17,7 +17,7 @@ EXECUTE FUNCTION Double_booking();
 CREATE OR REPLACE FUNCTION Inventory_Deduction()
 RETURNS TRIGGER AS $$
    BEGIN
-      IF EXISTS (SELECT 1 FROM Medications WHERE Medication_id = NEW.Medication_id AND Stock_quantity > NEW.quantity) THEN
+      IF EXISTS (SELECT 1 FROM Medications WHERE Medication_id = NEW.Medication_id AND Stock_quantity >= NEW.quantity) THEN
          UPDATE Medications 
          SET Stock_quantity = Stock_quantity - NEW.quantity
          WHERE Medication_id = NEW.Medication_id;
@@ -38,15 +38,24 @@ CREATE OR REPLACE FUNCTION Invoice_Generator()
 RETURNS TRIGGER AS $$
 DECLARE
     v_patient_id INT;
+    v_amount NUMERIC;
 BEGIN
     -- Step 1: Deduce patient_id from the Appointments table
     SELECT patient_id INTO v_patient_id
     FROM Appointments
     WHERE appointment_id = NEW.appointment_id;
 
+   SELECT consultation_fee INTO v_amount
+   FROM Doctors
+   WHERE doctor_id = (SELECT doctor_id FROM Appointments WHERE appointment_id = NEW.appointment_id);
+
     -- Step 2: Validate that the appointment exists
     IF v_patient_id IS NULL THEN
         RAISE EXCEPTION 'Appointment ID % not found', NEW.appointment_id;
+    END IF;
+
+    IF v_amount IS NULL THEN
+        RAISE EXCEPTION 'Consultation fee not found for the doctor associated with appointment ID %', NEW.appointment_id;
     END IF;
 
     -- Step 3: Insert a new invoice with the standard base consultation fee
@@ -59,8 +68,8 @@ BEGIN
     VALUES (
         NEW.appointment_id, 
         v_patient_id, 
-        NEW.amount,       
-        NEW.is_paid         
+        v_amount,       
+        FALSE         
     );
 
     RETURN NEW;

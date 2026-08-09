@@ -1,6 +1,9 @@
-const router = require("express").Router();
+import { Router } from "express";
+import { query } from "../db.js";   
 
-router.get("/api/medications", async (req, res) => {
+const router = Router();
+
+router.get("/medications", async (req, res) => {
     const { name } = req.query;
     let sql = "SELECT * FROM Medications";
     const params = [];
@@ -12,15 +15,15 @@ router.get("/api/medications", async (req, res) => {
     res.json(result.rows);
 });
 
-router.post("/api/prescriptions", async (req, res) => {
-    const { appointment_id, medication_id, record_id, qunatity, refills, instructions } = req.body;
-    let sql = "INSERT INTO Prescriptions (appointment_id, medication_id, record_id, qunatity, refills, instructions) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
-    const params = [appointment_id, medication_id, record_id, qunatity, refills, instructions];
+router.post("/prescriptions", async (req, res) => {
+    const { appointment_id, medication_id, record_id, quantity, refills, instructions } = req.body;
+    let sql = "INSERT INTO Prescriptions (appointment_id, medication_id, record_id, quantity, refills, instructions) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
+    const params = [appointment_id, medication_id, record_id, quantity, refills, instructions];
     const result = await query(sql, params);
     res.json(result.rows[0]);
 });
 
-router.get("/api/pharmacy/queue", async (req, res) => {
+router.get("/pharmacy/queue", async (req, res) => {
     
     let sql = "SELECT * FROM Pharmacy_fulfillment";
     const result = await query(sql);

@@ -7,15 +7,15 @@ INSERT INTO Departments (department_name) VALUES
 ('Orthopedics'),
 ('Pediatrics'),
 ('General Medicine')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (department_name) DO NOTHING  ;
 
 -- Doctors
-INSERT INTO Doctors (doctor_name, specialization, shift, email, phone, department_id) VALUES
-('Dr. Robert Smith', 'Cardiologist', 'Morning', 'robert.smith@hospital.com', '9876543210', 1),
-('Dr. Emily Davis', 'Neurologist', 'Evening', 'emily.davis@hospital.com', '9876543211', 2),
-('Dr. James Wilson', 'Orthopedic Surgeon', 'Morning', 'james.wilson@hospital.com', '9876543212', 3),
-('Dr. Sarah Jenkins', 'Pediatrician', 'Night', 'sarah.jenkins@hospital.com', '9876543213', 4),
-('Dr. Michael Brown', 'General Physician', 'Morning', 'michael.brown@hospital.com', '9876543214', 5)
+INSERT INTO Doctors (doctor_name, specialization, consultation_fee, shift, email, phone, department_id) VALUES
+('Dr. Robert Smith', 'Cardiologist', 150.00, 'Morning', 'robert.smith@hospital.com', '9876543210', 1),
+('Dr. Emily Davis', 'Neurologist', 180.00, 'Evening', 'emily.davis@hospital.com', '9876543211', 2),
+('Dr. James Wilson', 'Orthopedic Surgeon', 200.00, 'Morning', 'james.wilson@hospital.com', '9876543212', 3),
+('Dr. Sarah Jenkins', 'Pediatrician', 120.00, 'Night', 'sarah.jenkins@hospital.com', '9876543213', 4),
+('Dr. Michael Brown', 'General Physician', 100.00, 'Morning', 'michael.brown@hospital.com', '9876543214', 5)
 ON CONFLICT DO NOTHING;
 
 -- Patients

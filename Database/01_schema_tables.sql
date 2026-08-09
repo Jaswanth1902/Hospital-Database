@@ -16,11 +16,13 @@ CREATE TABLE IF NOT EXISTS Doctors (
 	Doctor_id SERIAL PRIMARY KEY,
 	doctor_name VARCHAR(255) NOT NULL,  
     specialization VARCHAR(255) NOT NULL,
+    consultation_fee NUMERIC NOT NULL,
     shift VARCHAR(50) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     phone VARCHAR(10) NOT NULL UNIQUE ,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     department_id INT REFERENCES Departments(department_id) ON DELETE SET NULL
+
 );
 
 CREATE TABLE IF NOT EXISTS Patients (

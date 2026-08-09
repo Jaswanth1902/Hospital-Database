@@ -1,6 +1,9 @@
-const router = require("express").Router();
+import { Router } from "express";
+import { query } from "../db.js";   
 
-router.get("/api/appointments/today", async (req, res) => {
+const router = Router();
+
+router.get("/appointments/today", async (req, res) => {
     const { patient_name, doctor_name, date } = req.query;
     let sql = "SELECT * FROM Doctor_daily_view";
     const params = [];
@@ -21,7 +24,7 @@ router.get("/api/appointments/today", async (req, res) => {
     res.json(result.rows);
 });
 
-router.get("/api/appointments/:id/records", async (req, res) => {
+router.get("/appointments/:id/records", async (req, res) => {
     const { id } = req.params;
     let sql = "SELECT * FROM Patient_EHR_view WHERE appointment_id = $1";
     const params = [id];
@@ -29,26 +32,18 @@ router.get("/api/appointments/:id/records", async (req, res) => {
     res.json(result.rows);
 });
 
-router.post("/api/records", async (req, res) => {
-    const { appointment_id, diagnosis, treatment, notes } = req.body;
-    let sql = "INSERT INTO MedicalRecords (appointment_id, diagnosis, treatment, notes) VALUES ($1, $2, $3, $4) RETURNING *";
-    const params = [appointment_id, diagnosis, treatment, notes];
+router.post("/records", async (req, res) => {
+    const { appointment_id, diagnosis, notes } = req.body;
+    let sql = "INSERT INTO Medical_Records (appointment_id, diagnosis, notes) VALUES ($1, $2, $3) RETURNING *";
+    const params = [appointment_id, diagnosis, notes];
     const result = await query(sql, params);
     res.json(result.rows[0]);
 });
 
-router.put("/api/appointments/:id/status", async (req, res) => {
+router.put("/appointments/:id/status", async (req, res) => {
     const {status, id } = req.params;
     let sql = "UPDATE Appointments SET status = $1 WHERE appointment_id = $2 RETURNING *";
     const params = [status, id];
-    const result = await query(sql, params);
-    res.json(result.rows[0]);
-});
-
-router.post("/api/records", async (req, res) => {
-    const { appointment_id, diagnosis, treatment, notes } = req.body;
-    let sql = "INSERT INTO MedicalRecords (appointment_id, diagnosis, treatment, notes) VALUES ($1, $2, $3, $4) RETURNING *";
-    const params = [appointment_id, diagnosis, treatment, notes];
     const result = await query(sql, params);
     res.json(result.rows[0]);
 });
