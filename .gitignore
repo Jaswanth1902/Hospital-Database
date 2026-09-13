@@ -1,0 +1,12 @@
+# Node dependencies
+node_modules/
+npm-debug.log*
+
+# Environment secrets
+.env
+.env.local
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
